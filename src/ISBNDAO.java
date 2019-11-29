@@ -3,7 +3,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class RelatedISBNDAO {
+public class ISBNDAO {
 	
 	private ResultSet rs=null;
 	private PreparedStatement pstmt= null;
@@ -64,6 +64,36 @@ public class RelatedISBNDAO {
 		}
 	}
 	return titleDetails;
+	}
+
+
+	public ISBNVO getisbn10andisbn13(Connection con,String isbn10) {
+		
+		ISBNVO isbnvo = new ISBNVO();
+		try {
+			String sql = "select ISBN,ISBN13,COUNTRY_OF_ORIGIN,STATUS_CODE from ISBN_AS400 where ISBN = ?";
+			pstmt= con.prepareStatement(sql);
+			pstmt.setString(1, isbn10);
+			rs=pstmt.executeQuery();
+			while(rs.next())
+			{
+				isbnvo.setIsbn(rs.getString(1));
+				isbnvo.setIsbn13(rs.getString(2));
+				isbnvo.setCounntryCode(rs.getString(3));
+				isbnvo.setStatusCode(rs.getString(4));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally
+		{
+			try {
+				rs.close();
+				pstmt.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return isbnvo;
 	}
 		
 	

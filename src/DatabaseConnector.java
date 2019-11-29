@@ -18,7 +18,7 @@ public class DatabaseConnector {
 	private static Connection con=null;
 	private ResultSet rs=null;
 	private PreparedStatement pstmt= null;
-	RelatedISBNDAO dao = new RelatedISBNDAO();
+	ISBNDAO dao = new ISBNDAO();
 	String env = "dev";
 	//private static final Logger LOGGER = Logger.getLogger(DatabaseConnector.class);
 	
@@ -35,7 +35,7 @@ public class DatabaseConnector {
 			String user = prop.getProperty(env + ".user");
 			String password = prop.getProperty(env + ".password");
 			
-			System.out.println("Properties values are :-  " +url + "User :- " +user + "Password :- "+password);
+			//System.out.println("Properties values are :-  " +url + "User :- " +user + "Password :- "+password);
 			
 			con = DriverManager.getConnection(url,user,password);
 			DriverManager.registerDriver (new oracle.jdbc.driver.OracleDriver());
@@ -140,6 +140,12 @@ public class DatabaseConnector {
 		String [] titleDetails = new String[2];
 		titleDetails = dao.getTitleSubTitle(con,isbn10);
 		return titleDetails;
+	}
+
+	public ISBNVO getisbn10andisbn13(String isbn10) {
+		ISBNVO isbnvo = new ISBNVO();
+		isbnvo = dao.getisbn10andisbn13(con,isbn10);
+		return isbnvo;
 	}
 	
 	/*public String selectIsbn10forIsbn13(Connection con,String isbn10){
