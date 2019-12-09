@@ -18,8 +18,9 @@ public class DatabaseConnector {
 	private static Connection con=null;
 	private ResultSet rs=null;
 	private PreparedStatement pstmt= null;
-	ISBNDAO dao = new ISBNDAO();
 	String env = "dev";
+	ISBNDAO dao = new ISBNDAO();
+	workDAO workdao = new workDAO();
 	//private static final Logger LOGGER = Logger.getLogger(DatabaseConnector.class);
 	
 	
@@ -129,13 +130,6 @@ public class DatabaseConnector {
 	}
 	
 	
-	public String getrelatedISBN(String isbn10){
-		
-		String relatedISBN="";
-		relatedISBN = dao.getrelatedISBN(con,isbn10);
-		return relatedISBN;
-	}
-
 	public String[] getTitleSubTitle(String isbn10) {
 		String [] titleDetails = new String[2];
 		titleDetails = dao.getTitleSubTitle(con,isbn10);
@@ -148,8 +142,16 @@ public class DatabaseConnector {
 		return isbnvo;
 	}
 	
-	/*public String selectIsbn10forIsbn13(Connection con,String isbn10){
-	return dao.selectIsbn10forIsbn13(con,isbn10);
-	}*/
+	public ISBNVO getseriesSeq(String isbn10) {
+		ISBNVO isbnvo = new ISBNVO();
+		isbnvo = dao.getseriesSeq(con,isbn10);
+		return isbnvo;
+	}
 	
+	public workVO getparentID(String isbn10) {
+		workVO workvo = new workVO();
+		workvo = workdao.getparentID(con,isbn10);
+		return workvo;
+	}
+
 }
