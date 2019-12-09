@@ -9,38 +9,11 @@ public class ISBNDAO {
 	private PreparedStatement pstmt= null;
 	
 	
-	public String getrelatedISBN(Connection con,String isbn10){
-		String relatedISBN = null;
-		try {
-			String sql="select RELATED_ISBN from relation_as400 i400 where i400.isbn = ?";
-			pstmt= con.prepareStatement(sql);
-			pstmt.setString(1, isbn10);
-			
-			rs=pstmt.executeQuery();
-			while(rs.next())
-			{
-				relatedISBN = rs.getString(1);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}finally
-		{
-			try {
-				rs.close();
-				pstmt.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return relatedISBN;
-	}
-
-
 	public String[] getTitleSubTitle(Connection con,String isbn10)
 	{
 		String[] titleDetails = new String[2];
-		/*titleDetails[0] = "";
-		titleDetails[1] = "";*/
+		titleDetails[0] = "";
+		titleDetails[1] = "";
 		
 	try {
 		String sql="select TITLE,SUBTITLE from WORK w,ISBN i where w.WORK_ID = i.WORK_ID and i.ISBN = ?";
@@ -82,6 +55,61 @@ public class ISBNDAO {
 				isbnvo.setCounntryCode(rs.getString(3));
 				isbnvo.setStatusCode(rs.getString(4));
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally
+		{
+			try {
+				rs.close();
+				pstmt.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return isbnvo;
+	}
+
+
+	public ISBNVO getseriesSeq(Connection con, String isbn10) {
+		ISBNVO isbnvo = new ISBNVO();
+		String serieSeq	 = "";
+		String seriesCode = "";
+		try {
+			String sql = "select SERIES_SEQ,SERIES_CODE from ISBN_AS400 where ISBN = ?";
+			pstmt= con.prepareStatement(sql);
+			pstmt.setString(1, isbn10);
+			rs=pstmt.executeQuery();
+			while(rs.next())
+			{
+				serieSeq = "" +  rs.getString(1);
+				seriesCode = "" +  rs.getString(2);
+				
+				if(!serieSeq.equals("null") && !seriesCode.equals("null")){
+					isbnvo.setSeriesSeq(rs.getString(1));
+					isbnvo.setSeriesCode(rs.getString(2));
+				}
+				else{
+					isbnvo.setSeriesSeq("");
+					isbnvo.setSeriesCode("");
+				}
+				
+			}
+			
+			seriesCode = "" + isbnvo.getSeriesCode();
+			if (!seriesCode.equals("null") && !seriesCode.isEmpty()){
+				
+				ResultSet rs1 = null;
+				PreparedStatement pstmt = null;
+				String sql2 = "select SERIES_DESCRIPTION from SERIES_AS400 where SERIES_CODE =?";
+				pstmt= con.prepareStatement(sql2);
+				pstmt.setString(1, seriesCode);
+				rs1=pstmt.executeQuery();
+				while(rs1.next())
+				{
+					isbnvo.setSeriesDescription(rs1.getString(1));
+				}
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally
